@@ -26,32 +26,14 @@ rescue
   end
 end
 
-FileUtils.mkdir_p("script_span")
-
-[
-  "fixunicodevalue.h",
-  "generated_ulscript.h",
-  "getonescriptspan.h",
-  "integral_types.h",
-  "offsetmap.h",
-  "port.h",
-  "stringpiece.h",
-  "text_processing.h",
-  "utf8acceptinterchange.h",
-  "utf8prop_lettermarkscriptnum.h",
-  "utf8repl_lettermarklower.h",
-  "utf8scannot_lettermarkspecial.h",
-  "utf8statetable.h"
-].each {|name|
-  ln_fallback("#{name}", "script_span/#{name}")
-}
-
 # Check if we're building from git (source files in ext/src subdirectory)
 # or from a prepared gem package (files in current directory)
 if File.exist?("ext/src/nnet_language_identifier.h")
   # Building from git - add include path and copy/link source files
   $INCFLAGS << " -I$(srcdir)/ext/src"
   $INCFLAGS << " -I$(srcdir)/cld_3/protos"
+  
+  FileUtils.mkdir_p("script_span")
   
   # List of root-level source and header files from ext/src
   root_files = [
@@ -164,6 +146,28 @@ if File.exist?("ext/src/nnet_language_identifier.h")
   # Add source files to the build
   $srcs = ["nnet_language_identifier_c.cc"] + source_cc_files
   $objs = $srcs.map { |f| f.sub(/\.cc$/, ".o") }
+else
+  # Building from prepared gem package - files are already in place
+  # Just create symlinks for script_span headers that reference current directory
+  FileUtils.mkdir_p("script_span")
+  
+  [
+    "fixunicodevalue.h",
+    "generated_ulscript.h",
+    "getonescriptspan.h",
+    "integral_types.h",
+    "offsetmap.h",
+    "port.h",
+    "stringpiece.h",
+    "text_processing.h",
+    "utf8acceptinterchange.h",
+    "utf8prop_lettermarkscriptnum.h",
+    "utf8repl_lettermarklower.h",
+    "utf8scannot_lettermarkspecial.h",
+    "utf8statetable.h"
+  ].each {|name|
+    ln_fallback("#{name}", "script_span/#{name}")
+  }
 end
 
 $CXXFLAGS += " -fvisibility=hidden -std=c++17"
