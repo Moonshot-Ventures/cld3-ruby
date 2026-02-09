@@ -46,5 +46,52 @@ FileUtils.mkdir_p("script_span")
   ln_fallback("#{name}", "script_span/#{name}")
 }
 
+# Check if we're building from git (source files in ext/src subdirectory)
+# or from a prepared gem package (files in current directory)
+if File.exist?("ext/src/nnet_language_identifier.h")
+  # Building from git - add include path and copy/link source files
+  $INCFLAGS << " -I$(srcdir)/ext/src"
+  $INCFLAGS << " -I$(srcdir)/cld_3/protos"
+  
+  # List of source files from ext/src that need to be compiled
+  source_files = [
+    "base.cc",
+    "embedding_feature_extractor.cc",
+    "embedding_network.cc",
+    "feature_extractor.cc",
+    "feature_types.cc",
+    "fml_parser.cc",
+    "language_identifier_features.cc",
+    "lang_id_nn_params.cc",
+    "nnet_language_identifier.cc",
+    "registry.cc",
+    "relevant_script_feature.cc",
+    "sentence_features.cc",
+    "task_context.cc",
+    "task_context_params.cc",
+    "unicodetext.cc",
+    "utils.cc",
+    "workspace.cc",
+    "script_span/fixunicodevalue.cc",
+    "script_span/generated_entities.cc",
+    "script_span/generated_ulscript.cc",
+    "script_span/getonescriptspan.cc",
+    "script_span/offsetmap.cc",
+    "script_span/text_processing.cc",
+    "script_span/utf8statetable.cc"
+  ]
+  
+  # Create symlinks or copies for source files
+  source_files.each do |file|
+    target = File.basename(file)
+    source = File.join("ext/src", file)
+    ln_fallback(source, target) unless File.exist?(target)
+  end
+  
+  # Add source files to the build
+  $srcs = ["nnet_language_identifier_c.cc"] + source_files.map { |f| File.basename(f) }
+  $objs = $srcs.map { |f| f.sub(/\.cc$/, ".o") }
+end
+
 $CXXFLAGS += " -fvisibility=hidden -std=c++17"
 create_makefile("cld3_ext")
