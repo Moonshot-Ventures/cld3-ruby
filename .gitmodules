@@ -1,3 +1,0 @@
-[submodule "ext/cld3/ext"]
-	path = ext/cld3/ext
-	url = https://github.com/google/cld3.git
