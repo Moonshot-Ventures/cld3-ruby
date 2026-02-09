@@ -16,14 +16,14 @@
 
 Gem::Specification.new do |gem|
   gem.name = "cld3"
-  gem.version = "3.7.0"
+  gem.version = "3.7.1"
   gem.summary = "Compact Language Detector v3 (CLD3)"
   gem.description = "Compact Language Detector v3 (CLD3) is a neural network model for language identification."
   gem.license = "Apache-2.0"
   gem.homepage = "https://github.com/akihikodaki/cld3-ruby"
   gem.author = "Akihiko Odaki"
   gem.email = "akihiko.odaki@gmail.com"
-  gem.required_ruby_version = [ ">= 3.1.0", "< 3.5.0" ]
+  gem.required_ruby_version = [ ">= 3.1.0", "< 5.0.0" ]
   gem.add_development_dependency "rbs", "~> 3.6.0"
   gem.add_development_dependency "rspec", "~> 3.13.0"
   gem.add_development_dependency "steep", "~> 1.8.0"
