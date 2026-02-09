@@ -53,8 +53,88 @@ if File.exist?("ext/src/nnet_language_identifier.h")
   $INCFLAGS << " -I$(srcdir)/ext/src"
   $INCFLAGS << " -I$(srcdir)/cld_3/protos"
   
-  # List of source files from ext/src that need to be compiled
-  source_files = [
+  # List of root-level source and header files from ext/src
+  root_files = [
+    "base.cc",
+    "base.h",
+    "casts.h",
+    "embedding_feature_extractor.cc",
+    "embedding_feature_extractor.h",
+    "embedding_network.cc",
+    "embedding_network.h",
+    "embedding_network_params.h",
+    "feature_extractor.cc",
+    "feature_extractor.h",
+    "feature_types.cc",
+    "feature_types.h",
+    "float16.h",
+    "fml_parser.cc",
+    "fml_parser.h",
+    "language_identifier_features.cc",
+    "language_identifier_features.h",
+    "lang_id_nn_params.cc",
+    "lang_id_nn_params.h",
+    "nnet_language_identifier.cc",
+    "nnet_language_identifier.h",
+    "registry.cc",
+    "registry.h",
+    "relevant_script_feature.cc",
+    "relevant_script_feature.h",
+    "script_detector.h",
+    "sentence_features.cc",
+    "sentence_features.h",
+    "simple_adder.h",
+    "task_context.cc",
+    "task_context.h",
+    "task_context_params.cc",
+    "task_context_params.h",
+    "unicodetext.cc",
+    "unicodetext.h",
+    "utils.cc",
+    "utils.h",
+    "workspace.cc",
+    "workspace.h"
+  ]
+  
+  # List of script_span source and header files
+  script_span_files = [
+    "fixunicodevalue.cc",
+    "fixunicodevalue.h",
+    "generated_entities.cc",
+    "generated_ulscript.cc",
+    "generated_ulscript.h",
+    "getonescriptspan.cc",
+    "getonescriptspan.h",
+    "integral_types.h",
+    "offsetmap.cc",
+    "offsetmap.h",
+    "port.h",
+    "stringpiece.h",
+    "text_processing.cc",
+    "text_processing.h",
+    "utf8acceptinterchange.h",
+    "utf8prop_lettermarkscriptnum.h",
+    "utf8repl_lettermarklower.h",
+    "utf8scannot_lettermarkspecial.h",
+    "utf8statetable.cc",
+    "utf8statetable.h"
+  ]
+  
+  # Create symlinks or copies for root-level files
+  root_files.each do |file|
+    source = File.join("ext/src", file)
+    ln_fallback(source, file) unless File.exist?(file)
+  end
+  
+  # Create symlinks or copies for script_span files
+  script_span_files.each do |file|
+    source = File.join("ext/src/script_span", file)
+    target = File.join("script_span", file)
+    ln_fallback(source, target) unless File.exist?(target)
+  end
+  
+  # List only the .cc files for compilation
+  source_cc_files = [
     "base.cc",
     "embedding_feature_extractor.cc",
     "embedding_network.cc",
@@ -81,15 +161,8 @@ if File.exist?("ext/src/nnet_language_identifier.h")
     "script_span/utf8statetable.cc"
   ]
   
-  # Create symlinks or copies for source files
-  source_files.each do |file|
-    target = File.basename(file)
-    source = File.join("ext/src", file)
-    ln_fallback(source, target) unless File.exist?(target)
-  end
-  
   # Add source files to the build
-  $srcs = ["nnet_language_identifier_c.cc"] + source_files.map { |f| File.basename(f) }
+  $srcs = ["nnet_language_identifier_c.cc"] + source_cc_files
   $objs = $srcs.map { |f| f.sub(/\.cc$/, ".o") }
 end
 
